@@ -105,7 +105,7 @@ class MemoryRegion:
         return self.end_addr - self.start_addr
 
     def __contains__(self, item: int) -> bool:
-        return item >= self.start_addr and item < self.end_addr
+        return item in range(self.start_addr, self.end_addr)
 
     def __str__(self) -> str:
         builder: List[str] = []
@@ -146,6 +146,27 @@ class MemoryRegion:
 
         return "".join(builder)
 
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, MemoryRegion):
+            return NotImplemented
+
+        return (
+            self.start_addr == other.start_addr
+            and self.size == other.size
+            and self.pathname == other.pathname
+            and self.is_r == other.is_r
+            and self.is_p == other.is_p
+            and self.is_w == other.is_w
+            and self.is_x == other.is_x
+        )
+
+    @property
+    def size(self) -> int:
+        return len(self)
+
     def is_readable(self) -> bool:
         return self.is_r
 
@@ -160,6 +181,14 @@ class MemoryRegion:
 
     def is_file_deleted(self) -> bool:
         return self.file_deleted
+
+    def contains(self, addr: int) -> bool:
+        return addr in self
+
+    def overlaps(self, other: MemoryRegion) -> bool:
+        return max(self.start_addr, other.start_addr) <= min(
+            self.end_addr, other.end_addr
+        )
 
     @property
     def type(self) -> str:
