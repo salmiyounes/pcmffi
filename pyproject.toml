@@ -9,7 +9,7 @@ requires-python = ">=3.12.3"
 license = "MIT"
 
 [project.urls]
-Homepage = "https://github.com/salmiyounes/cffi-procmaps"
+Homepage = "https://github.com/salmiyounes/pcmffi"
 
 [tool.setuptools]
 packages = ["pcmffi"]
