@@ -52,6 +52,16 @@ class TestProcMaps(unittest.TestCase):
             "55d5564b4000-55d5564b6000 r--p 00000000 08:11 6553896 /bin/cat"
         )
         self.check_map_properties(maps)
+    
+    def test_equal(self):
+        m1 = MemoryRegion.from_str(
+            "55d5564b4000-55d5564b6000 r--p 00000000 08:11 6553896 /bin/cat"
+        )
+        m2 = MemoryRegion.from_str(
+            "55d5564b4000-55d5564b6000 r--p 00000000 08:11 6553896 /bin/cat"
+        )
+        
+        self.assertEqual(m1, m2)
 
     def test_from_pid(self):
         with ProcMaps.from_pid(os.getpid()) as maps:
