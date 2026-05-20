@@ -7,7 +7,7 @@ from .exceptions import (
     ProcMapsReadFileError,
     ProcMapsMemoryError,
 )
-from .utils import to_bytes, to_str
+from .utils import to_bytes, to_str, format_address_range
 from ._pcmffi import ffi, lib
 
 if TYPE_CHECKING:
@@ -34,19 +34,19 @@ PROCMAPS_MAP_ANON_SHMEM: PROCMAPS_MAP_TYPE = 8
 PROCMAPS_MAP_ANON_MMAPS: PROCMAPS_MAP_TYPE = 9
 PROCMAPS_MAP_OTHER: PROCMAPS_MAP_TYPE = 10
 
-proc_map_types: List[str] = [
-    "file",
-    "process_stack",
-    "thread_stack",
-    "VDSO",
-    "heap",
-    "anon_private",
-    "anon_shared",
-    "anonymous",
-    "vvar",
-    "vsyscall",
-    "other",
-]
+proc_map_types: Dict[PROCMAPS_MAP_TYPE, str] = {
+    PROCMAPS_MAP_FILE: "file",
+    PROCMAPS_MAP_STACK: "process_stack",
+    PROCMAPS_MAP_STACK_TID: "thread_stack",
+    PROCMAPS_MAP_VDSO: "VDSO",
+    PROCMAPS_MAP_HEAP: "heap",
+    PROCMAPS_MAP_ANON_PRIV: "anon_private",
+    PROCMAPS_MAP_ANON_SHMEM: "anon_shared",
+    PROCMAPS_MAP_ANON_MMAPS: "anonymous",
+    PROCMAPS_MAP_VVAR: "vvar",
+    PROCMAPS_MAP_VSYSCALL: "vsyscall",
+    PROCMAPS_MAP_OTHER: "other",
+}
 
 proc_map_exception_msg: Dict[int, str] = {
     PROCMAPS_ERROR_OPEN_MAPS_FILE: "Failed to open the maps file (check /proc)",
@@ -75,6 +75,10 @@ def error_map_excpetion(err: int) -> Any:
 
 def error_to_str(err: int) -> str | None:
     return proc_map_exception_msg.get(err)
+
+
+def map_type_to_string(type: PROCMAPS_MAP_TYPE) -> str:
+    return proc_map_types.get(type, "unknown")
 
 
 def proc_map_iterator(procmaps_it: CData) -> Iterator["MemoryRegion"]:
@@ -111,10 +115,8 @@ class MemoryRegion:
         builder: List[str] = []
 
         # Address Range
-        addr_range = "0x%.12x-0x%.12x\t" % (
-            self.start_addr,
-            self.end_addr,
-        )
+        addr_range = format_address_range(self.start_addr, self.end_addr)
+        addr_range += "\t"
         builder.append(addr_range)
 
         # Permissions
@@ -192,7 +194,7 @@ class MemoryRegion:
 
     @property
     def type(self) -> str:
-        return proc_map_types[self.map_type]
+        return map_type_to_string(self.map_type)
 
     @classmethod
     def from_str(cls, maps_data: str | bytes) -> Self:
