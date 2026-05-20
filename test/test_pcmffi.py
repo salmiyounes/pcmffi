@@ -40,7 +40,7 @@ class TestProcMaps(unittest.TestCase):
         self.assertEqual(
             str(map_),
             dedent("""\
-                                           0x55d5564b4000-0x55d5564b6000\tr--p 8192
+                                           0x000055d5564b4000-0x000055d5564b6000\tr--p 8192
                                            file\tOffset:0 /bin/cat
                                            inode :6553896
                                            device:8:11
