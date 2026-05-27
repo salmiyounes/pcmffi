@@ -5,6 +5,7 @@ ffi = FFI()
 ffi.set_source(
     "pcmffi._pcmffi",
     """
+    #
     #include "pmparser.h"
 """,
     include_dirs=["pcmffi/src"],
@@ -57,6 +58,8 @@ ffi.cdef("""\
         void pmparser_free(procmaps_iterator *p_procmaps_it);
          
         void pmparser_parse_line(char *buf, procmaps_struct *mem_reg);
+         
+        void free(void *ptr);
 """)
 
 if __name__ == "__main__":

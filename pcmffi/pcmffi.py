@@ -192,6 +192,19 @@ class MemoryRegion:
             self.end_addr, other.end_addr
         )
 
+    @staticmethod
+    def _procmaps_struct_free(mem_reg: CData) -> None:
+        if mem_reg == ffi.NULL:
+            raise ValueError("Cannot free a NULL pointer.")
+
+        if ffi.typeof(mem_reg) is not ffi.typeof("struct procmaps_struct *"):
+            raise TypeError(
+                f"Expected 'struct procmaps_struct *', got {ffi.typeof(mem_reg)}"
+            )
+
+        if mem_reg.pathname != ffi.NULL:
+            lib.free(mem_reg.pathname)
+
     @property
     def type(self) -> str:
         return map_type_to_string(self.map_type)
@@ -200,9 +213,15 @@ class MemoryRegion:
     def from_str(cls, maps_data: str | bytes) -> Self:
         if isinstance(maps_data, str):
             maps_data = to_bytes(maps_data)
+
         dummy = ffi.new("struct procmaps_struct *")
-        lib.pmparser_parse_line(maps_data, dummy)
-        return cls.from_procmaps_struct(dummy)
+
+        try:
+            lib.pmparser_parse_line(maps_data, dummy)
+            return cls.from_procmaps_struct(dummy)
+
+        finally:
+            cls._procmaps_struct_free(dummy)
 
     @classmethod
     def from_procmaps_struct(cls, mem_reg: CData) -> Self:
