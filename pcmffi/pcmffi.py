@@ -34,7 +34,7 @@ PROCMAPS_MAP_ANON_SHMEM: PROCMAPS_MAP_TYPE = 8
 PROCMAPS_MAP_ANON_MMAPS: PROCMAPS_MAP_TYPE = 9
 PROCMAPS_MAP_OTHER: PROCMAPS_MAP_TYPE = 10
 
-proc_map_types: Dict[PROCMAPS_MAP_TYPE, str] = {
+PROC_MAPS_TYPE: Dict[PROCMAPS_MAP_TYPE, str] = {
     PROCMAPS_MAP_FILE: "file",
     PROCMAPS_MAP_STACK: "process_stack",
     PROCMAPS_MAP_STACK_TID: "thread_stack",
@@ -48,13 +48,13 @@ proc_map_types: Dict[PROCMAPS_MAP_TYPE, str] = {
     PROCMAPS_MAP_OTHER: "other",
 }
 
-proc_map_exception_msg: Dict[int, str] = {
+PROC_MAP_EXCEPTION_MSG: Dict[int, str] = {
     PROCMAPS_ERROR_OPEN_MAPS_FILE: "Failed to open the maps file (check /proc)",
     PROCMAPS_ERROR_READ_MAPS_FILE: "Failed to read from the maps file",
     PROCMAPS_ERROR_MALLOC_FAIL: "Internal memory allocation (malloc) failed",
 }
 
-error_mapping: Dict[int, Any] = {
+ERROR_MAPPING: Dict[int, Any] = {
     PROCMAPS_ERROR_MALLOC_FAIL: ProcMapsMemoryError,
     PROCMAPS_ERROR_OPEN_MAPS_FILE: ProcMapsOpenFileError,
     PROCMAPS_ERROR_READ_MAPS_FILE: ProcMapsReadFileError,
@@ -69,16 +69,16 @@ def ffi_cast(cdecl: str, cdata: CData) -> CData:
     return ffi.cast(cdecl, cdata)
 
 
-def error_map_excpetion(err: int) -> Any:
-    return error_mapping.get(err)
+def error_map_exception(err: int) -> Any:
+    return ERROR_MAPPING.get(err)
 
 
 def error_to_str(err: int) -> str | None:
-    return proc_map_exception_msg.get(err)
+    return PROC_MAP_EXCEPTION_MSG.get(err)
 
 
 def map_type_to_string(type: PROCMAPS_MAP_TYPE) -> str:
-    return proc_map_types.get(type, "unknown")
+    return PROC_MAPS_TYPE.get(type, "unknown")
 
 
 def proc_map_iterator(procmaps_it: CData) -> Iterator["MemoryRegion"]:
@@ -128,7 +128,7 @@ class MemoryRegion:
         )
         builder.append(f"{perms} ")
 
-        # Lenght and Map Type
+        # Length and Map Type
         builder.append(f"{self.length}\n")
         builder.append(f"{self.type}\t")
 
@@ -285,7 +285,7 @@ class ProcMaps:
         if err == PROCMAPS_SUCCESS:
             return
 
-        exception_cls = error_map_excpetion(err)
+        exception_cls = error_map_exception(err)
         if exception_cls:
             raise exception_cls(error_to_str(err))
 

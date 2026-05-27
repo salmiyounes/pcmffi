@@ -1,16 +1,16 @@
 from ctypes import sizeof, c_void_p
 
-CPU_64BITS = sizeof(c_void_p) == 8
+IS_64BIT = sizeof(c_void_p) == 8
 
 
-def formatUintHex64(value: int) -> str:
+def format_uint_hex64(value: int) -> str:
     """
     Format an 64 bits unsigned integer.
     """
     return "0x%016x" % value
 
 
-def formatUintHex32(value: int) -> str:
+def format_uint_hex32(value: int) -> str:
     """
     Format an 32 bits unsigned integer.
     """
@@ -29,15 +29,15 @@ def to_str(s: str | bytes) -> str:
     return bytes(s).decode()
 
 
-if CPU_64BITS:
-    formatWordHex = formatUintHex64
+if IS_64BIT:
+    format_word_hex = format_uint_hex64
 else:
-    formatWordHex = formatUintHex32
+    format_word_hex = format_uint_hex32
 
 
 def format_address(address: int) -> str:
     if address:
-        return formatWordHex(address)
+        return format_word_hex(address)
     else:
         return "NULL"
 
