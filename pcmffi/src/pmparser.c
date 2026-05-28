@@ -85,7 +85,7 @@ procmaps_error_t pmparser_parse(int pid, procmaps_iterator *maps_it)
 		}
 
 		// allocate a node
-		mem_reg = (procmaps_struct *)malloc(sizeof(procmaps_struct));
+		mem_reg = (procmaps_struct *)calloc(1, sizeof(procmaps_struct));
 		// fill the node
 		pmparser_parse_line(line_ptr, mem_reg);
 		mem_reg->next = NULL;
@@ -283,13 +283,15 @@ void pmparser_parse_line(char *buf, procmaps_struct *mem_reg)
 
 		// is the file deleted ?
 		// file_deleted
-		if (memcmp(mem_reg->pathname + strlen(mem_reg->pathname) - 9, "(deleted)", 9) == 0)
+		mem_reg->file_deleted = 0;
+
+		size_t path_len = strlen(mem_reg->pathname);
+		if (path_len >= 9) 
 		{
-			mem_reg->file_deleted = 1;
-		}
-		else
-		{
-			mem_reg->file_deleted = 0;
+			if (memcmp(mem_reg->pathname + strlen(mem_reg->pathname) - 9, "(deleted)", 9) == 0)
+			{
+				mem_reg->file_deleted = 1;
+			}
 		}
 	}
 }
