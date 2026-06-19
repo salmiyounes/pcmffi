@@ -18,6 +18,12 @@ from .pcmffi import (
     PROCMAPS_MAP_OTHER,
 )
 
+__title__ = "pcmffi"
+
+__author__ = "Salmi Younes"
+__copyright__ = "Copyright (c) 2026 " + __author__
+__license__ = "MIT"
+
 __all__ = [
     "ProcMaps",
     "MemoryRegion",

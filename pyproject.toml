@@ -3,10 +3,13 @@ requires = ["setuptools>=82.0", "cffi >= 2.0.0"]
 
 [project]
 name = "pcmffi"
+description = "Python CFFI bindings for proc_maps_parser"
+authors = [{ name = "Salmi Younes"}]
 version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.12.3"
 license = "MIT"
+keywords = ["linux", "memory", "cffi", "procfs"]
 
 [project.urls]
 Homepage = "https://github.com/salmiyounes/pcmffi"
