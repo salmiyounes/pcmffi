@@ -89,6 +89,31 @@ def proc_map_iterator(procmaps_it: CData) -> Iterator["MemoryRegion"]:
 
 @dataclass
 class MemoryRegion:
+    """Represents a parsed virtual memory region from /proc/[pid]/maps.
+
+    Examples:
+        >>> from pcmffi import MemoryRegion
+        >>> region = MemoryRegion.from_str("55d5564b4000-55d5564b6000 r--p 00000000 08:11 6553896 /bin/cat")
+        >>> region
+        0x000055d5564b4000-0x000055d5564b6000   r--p 8192
+        file    Offset:0 /bin/cat
+        inode :6553896
+        device:8:11
+        >>>
+        >>> region.size
+        8192
+        >>> region.is_executable()
+        False
+        >>> region.is_private()
+        True
+        >>> region.type
+        'file'
+        >>> region.pathname
+        '/bin/cat'
+        >>> 0x55d5564b4002 in region # Or region.contains(0x55d5564b4002)
+        True
+    """
+
     start_addr: int  # void *addr_start
     end_addr: int  # void *addr_end
     length: int  # size_t length
@@ -258,6 +283,16 @@ class MemoryRegion:
 
 
 class ProcMaps:
+    """A context-managed streaming iterator over a process's memory maps.
+
+    Examples:
+        >>> from pcmffi import ProcMaps
+        >>> with ProcMaps() as maps:
+        ...     for region in maps:
+        ...         if region.is_executable():
+        ...             print(region.pathname)
+    """
+
     def __init__(self, pid: int = -1) -> None:
         self._pid: int = pid
         self._it = ffi.new("struct procmaps_iterator *")
