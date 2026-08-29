@@ -1,5 +1,5 @@
 [![Test](https://github.com/salmiyounes/pcmffi/actions/workflows/test.yml/badge.svg)](https://github.com/salmiyounes/pcmffi/actions/workflows/test.yml)
-[![License: MIT](https://shields.io)](https://opensource.org)
+[![License: MIT](https://img.shields.io/github/license/salmiyounes/pcmffi)](https://github.com/salmiyounes/pcmffi/blob/master/LICENSE.txt)
 
 pcmffi
 ======
