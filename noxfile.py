@@ -6,4 +6,4 @@ def tests(session):
         "pytest", "cffi"
     )
     session.install("-e", ".")
-    session.run("pytest")    
+    session.run("pytest", "-vv")    
